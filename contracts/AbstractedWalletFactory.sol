@@ -13,9 +13,13 @@ contract AbstractedWalletFactory {
     mapping(address => address) private _wallets;
 
     address public payer;
+    address public bridge;
+    address public eAAts;
 
-    constructor(address _payer) {
+    constructor(address _payer, address _bridge, address _eAAts) {
         payer = _payer;
+        bridge = _bridge;
+        eAAts = _eAAts;
     }
 
     function createWallet(address owner) external returns (address wallet) {
@@ -30,7 +34,7 @@ contract AbstractedWalletFactory {
             wallet := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
         }
 
-        IAbstractedWallet(wallet).initialize(owner, payer);
+        IAbstractedWallet(wallet).initialize(owner, payer, bridge, eAAts);
 
         _wallets[owner] = wallet;
         emit WalletCreated(owner, wallet);
